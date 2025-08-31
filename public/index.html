@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mundo da Matemática RPG</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+    <div id="ui-container">
+        <div id="player-info">
+            <span id="player-name"></span>
+            <span id="player-level"></span>
+            <span id="player-hp"></span>
+            <span id="player-coins"></span>
+            <span id="player-wins-losses"></span>
+        </div>
+        <button id="missions-button">Missões</button>
+        <button id="professor-button">Professor</button>
+    </div>
+
+    <div id="mission-panel" class="hidden">
+        <h2>Missões</h2>
+        <ul id="mission-list"></ul>
+        <button id="close-mission-panel">Fechar</button>
+    </div>
+
+    <div id="battle-dialog" class="hidden">
+        <p id="battle-prompt"></p>
+        <input type="text" id="battle-answer" placeholder="Sua resposta">
+        <button id="submit-answer">Responder</button>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/game.js"></script>
+    <script src="/net.js"></script>
+</body>
+</html>
+
+

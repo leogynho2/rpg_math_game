@@ -1,0 +1,37 @@
+{
+  "name": "mundo-matematica-rpg",
+  "version": "1.0.0",
+  "description": "RPG 2D web multiplayer com batalhas baseadas em matemática, inspirado em Pokémon",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "node server/server.js",
+    "dev": "nodemon server/server.js",
+    "init-db": "node -e \"require('./server/db.js').initDatabase()\""
+  },
+  "keywords": [
+    "rpg",
+    "math",
+    "multiplayer",
+    "game",
+    "education",
+    "pokemon"
+  ],
+  "author": "Seu Nome",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
+    "mathjs": "^11.8.0",
+    "socket.io": "^4.7.2",
+    "sqlite": "^5.1.1",
+    "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

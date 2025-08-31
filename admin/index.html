@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do Professor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        input[type="text"], input[type="password"], button {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #5cb85c;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #4cae4c;
+        }
+        .hidden {
+            display: none;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Painel do Professor</h1>
+
+        <div id="login-section">
+            <h2>Login</h2>
+            <input type="text" id="username" placeholder="Usuário" value="professor">
+            <input type="password" id="password" placeholder="Senha">
+            <button id="login-button">Entrar</button>
+            <p id="login-message" style="color: red;"></p>
+        </div>
+
+        <div id="dashboard-section" class="hidden">
+            <h2>Bem-vindo, Professor!</h2>
+            <button id="ranking-button">Ver Ranking</button>
+            <button id="export-csv-button">Exportar CSV</button>
+            <div id="ranking-data" class="hidden">
+                <h3>Ranking de Jogadores</h3>
+                <table id="ranking-table">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Nível</th>
+                            <th>EXP</th>
+                            <th>Vitórias</th>
+                            <th>Derrotas</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Ranking data will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="/admin.js"></script>
+</body>
+</html>
+
+

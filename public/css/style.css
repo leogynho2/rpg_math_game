@@ -1,0 +1,97 @@
+body {
+    margin: 0;
+    overflow: hidden;
+    background-color: #333;
+}
+
+canvas {
+    display: block;
+}
+
+#ui-container {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    color: white;
+    font-family: monospace;
+    font-size: 14px;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 10px;
+    border-radius: 5px;
+}
+
+#player-info span {
+    margin-right: 15px;
+}
+
+button {
+    margin-top: 10px;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+#mission-panel {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 20px;
+    border-radius: 8px;
+    z-index: 1000;
+    width: 300px;
+    max-height: 80%;
+    overflow-y: auto;
+}
+
+#mission-panel h2 {
+    margin-top: 0;
+}
+
+#mission-panel ul {
+    list-style: none;
+    padding: 0;
+}
+
+#mission-panel li {
+    margin-bottom: 10px;
+}
+
+#battle-dialog {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 20px;
+    border-radius: 8px;
+    z-index: 1000;
+    width: 300px;
+    text-align: center;
+}
+
+#battle-dialog input {
+    width: calc(100% - 20px);
+    padding: 8px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 4px;
+}
+
+#battle-dialog button {
+    margin-top: 10px;
+    padding: 8px 15px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.hidden {
+    display: none;
+}
+
+
