@@ -32,6 +32,11 @@
   let tilesetCols = 1;
   let GID_OFFSET = 0; // se GID 1 for transparente, somamos +1 automaticamente aos gids do map
 
+  // editor simples de mapa
+  let paletteCanvas, paletteCtx;
+  let paletteVisible = false;
+  let paintTile = 1;
+
   // ---- Sprite metas carregadas dinamicamente ----
   let playerSprite = null;     // {img, cols, rows, frameW, frameH, draw()}
   let professorSprite = null;
@@ -89,9 +94,25 @@
   // -------------- Mapa --------------
   async function loadMap(name) {
     const url = `${CONFIG.MAP_BASE_URL}/${name}.json`;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`Falha ao carregar ${url} (HTTP ${res.status})`);
-    const map = await res.json();
+    let map;
+    try {
+      const res = await fetch(url);
+      if (res.ok) {
+        map = await res.json();
+      }
+    } catch (e) {}
+
+    if (!map) {
+      const size = 50;
+      map = {
+        width: size,
+        height: size,
+        tilewidth: CONFIG.TILE_SIZE,
+        tileheight: CONFIG.TILE_SIZE,
+        layers: [{ type: 'tilelayer', data: new Array(size * size).fill(0) }],
+        tilesets: [{ firstgid: 1, image: CONFIG.TILESET_FALLBACK }]
+      };
+    }
 
     currentMap = map;
     const tw = currentMap.tilewidth  = currentMap.tilewidth  || CONFIG.TILE_SIZE;
@@ -104,14 +125,12 @@
     tilesetReady = false;
     tilesetImg.src = tilesetPath;
     await waitImage(tilesetImg);
+    tilesetReady = true;
 
-    if (ts.columns) {
-      tilesetCols = ts.columns;
-    } else {
-      const w = tilesetImg.naturalWidth || tilesetImg.width || (ts.imagewidth || 0);
-      tilesetCols = Math.max(1, Math.floor(w / tw));
-    }
+    const w = tilesetImg.naturalWidth || tilesetImg.width || 1;
+    tilesetCols = Math.max(1, Math.floor(w / tw));
 
+    updatePalette();
     await detectVisibleGidOffset();
 
     centerCameraOnPlayer();
@@ -128,6 +147,65 @@
     let opaque = 0;
     for (let i=3;i<data.length;i+=4){ if (data[i] > 8) { opaque++; if (opaque>50) break; } }
     GID_OFFSET = (opaque <= 50) ? 1 : 0;
+  }
+
+  function updatePalette() {
+    if (!tilesetImg) return;
+    const tw = currentMap.tilewidth, th = currentMap.tileheight;
+    const rows = Math.ceil((tilesetImg.naturalHeight || tilesetImg.height) / th);
+    if (!paletteCanvas) {
+      paletteCanvas = document.createElement('canvas');
+      paletteCanvas.style.position = 'fixed';
+      paletteCanvas.style.top = '0';
+      paletteCanvas.style.right = '0';
+      paletteCanvas.style.border = '1px solid #666';
+      paletteCanvas.style.imageRendering = 'pixelated';
+      paletteCanvas.style.display = 'none';
+      document.body.appendChild(paletteCanvas);
+      paletteCanvas.addEventListener('click', (e) => {
+        const rect = paletteCanvas.getBoundingClientRect();
+        const x = Math.floor((e.clientX - rect.left) / tw);
+        const y = Math.floor((e.clientY - rect.top) / th);
+        paintTile = y * tilesetCols + x + 1;
+      });
+    }
+
+    paletteCanvas.width = tilesetCols * tw;
+    paletteCanvas.height = rows * th;
+    paletteCtx = paletteCanvas.getContext('2d');
+    paletteCtx.imageSmoothingEnabled = false;
+    paletteCtx.clearRect(0,0,paletteCanvas.width,paletteCanvas.height);
+    paletteCtx.drawImage(tilesetImg, 0, 0);
+  }
+
+  function togglePalette(){
+    paletteVisible = !paletteVisible;
+    if (paletteCanvas) paletteCanvas.style.display = paletteVisible ? 'block' : 'none';
+  }
+
+  function fillMap(tile){
+    if (!currentMap) return;
+    const layer = currentMap.layers && currentMap.layers.find(l => l.type === 'tilelayer');
+    if (layer) layer.data = new Array(currentMap.width * currentMap.height).fill(tile);
+  }
+
+  function exportMap(){
+    const dataStr = JSON.stringify(currentMap, null, 2);
+    console.log('map json', dataStr);
+    return dataStr;
+  }
+
+  async function saveMap(){
+    try {
+      await fetch(`/admin/save-map?name=${encodeURIComponent(player.last_map)}`, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: exportMap()
+      });
+      console.log('map saved');
+    } catch(e){
+      console.error('save-map', e);
+    }
   }
 
   function centerCameraOnPlayer() {
@@ -174,7 +252,13 @@
 
   // -------------- Input local (teste) --------------
   const keys = Object.create(null);
-  addEventListener('keydown', e => { keys[e.key] = true; });
+  addEventListener('keydown', e => {
+    keys[e.key] = true;
+    if (e.key === 'p' || e.key === 'P') togglePalette();
+    if (e.key === 'b' || e.key === 'B') fillMap(paintTile);
+    if (e.key === 'e' || e.key === 'E') exportMap();
+    if (e.key === 's' && e.ctrlKey) { e.preventDefault(); saveMap(); }
+  });
   addEventListener('keyup',   e => { keys[e.key] = false; });
 
   // -------------- Game Loop --------------

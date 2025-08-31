@@ -1,31 +1,18 @@
 'use strict';
 (function(){
-  const playerName = localStorage.getItem('playerName') || (window.PLAYER_NAME || 'Jogador');
+  const playerName = localStorage.getItem('playerName') || 'Jogador';
   const socket = io('/', { auth: { name: playerName } });
-
-  socket.on('connect', () => console.log('Connected to server.'));
-
-  // Solicita estado inicial ao servidor com o nome
   socket.emit('player:join', { name: playerName });
 
-  socket.on('state:update', (state) => {
-    console.log('State update:', state);
-    try {
-      if (!state) return;
-      if (state.player && window.game && typeof window.game.setPlayer === 'function') {
-        window.game.setPlayer(state.player);
-      }
-      if (state.otherPlayers && window.game && typeof window.game.setOtherPlayers === 'function') {
-        window.game.setOtherPlayers(state.otherPlayers);
-      }
-      if (state.npcs && window.game && typeof window.game.setNpcs === 'function') {
-        window.game.setNpcs(state.npcs);
-      }
-    } catch (e) {
-      console.error('Falha ao aplicar estado no cliente:', e);
-    }
+  socket.on('state:update', (s) => {
+    if (s?.player) window.game?.setPlayer(s.player);
+    if (s?.npcs) window.game?.setNpcs(s.npcs);
+    if (s?.otherPlayers) window.game?.setOtherPlayers(s.otherPlayers);
   });
 
-  // exporta se outros scripts precisarem
+  // logs de reconexão para debug
+  socket.on('connect_error', err => console.warn('connect_error', err));
+  socket.io.on('reconnect_attempt', n => console.log('reconnect_attempt', n));
+
   window.socket = socket;
 })();
