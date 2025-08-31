@@ -1,0 +1,33 @@
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json
+
+# Ambiente/segredos
+.env
+.env.*
+*.local
+
+# SQLite (dev)
+database.sqlite
+server/db.sqlite
+
+# Logs
+logs/
+*.log
+*.sqlite-journal
+
+# Build/artefatos
+dist/
+build/
+coverage/
+
+# Editor/OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp

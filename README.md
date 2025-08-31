@@ -1,133 +1,56 @@
-# Mundo da Matemática RPG
+# Mundo Matemática RPG
 
-Este é um projeto de um RPG 2D web multiplayer com batalhas baseadas em matemática, inspirado em Pokémon. O jogo inclui funcionalidades de PvP e PvE, um sistema de missões, e um painel administrativo para professores.
+Servidor + cliente web de um mini-RPG educacional (Node.js + Socket.IO + SQLite).
 
-## Tecnologias Utilizadas
+## Rodando localmente
 
--   **Frontend:** HTML5 Canvas, JavaScript (ES6+)
--   **Backend:** Node.js, Express.js, Socket.IO
--   **Banco de Dados:** SQLite (com suporte a MySQL via configuração)
--   **Assets:** Pixel-art (placeholders)
-
-## Estrutura do Projeto
-
-```
-rpg_math_game/
-├── server/                 # Backend Node.js
-│   ├── server.js           # Servidor principal Express e Socket.IO
-│   ├── db.js               # Conexão e operações com o banco de dados
-│   ├── math.js             # Geração e validação de perguntas de matemática
-│   ├── battle.js           # Lógica de batalha e escalonamento
-│   ├── missions.js         # Sistema de missões e progresso
-│   ├── auth.js             # Autenticação para o painel do professor
-│   ├── sockets.js          # Gerenciamento de eventos Socket.IO
-│   ├── config.example.env  # Exemplo de variáveis de ambiente
-│   └── schema.sql          # Esquema do banco de dados e dados iniciais
-├── public/                 # Frontend do jogo
-│   ├── index.html          # Página principal do jogo
-│   ├── game.js             # Lógica principal do jogo (renderização, movimento)
-│   ├── net.js              # Comunicação com o servidor via Socket.IO
-│   ├── assets/             # Imagens e spritesheets
-│   │   ├── tileset.png
-│   │   ├── player.png
-│   │   ├── npc.png
-│   │   └── ui/icons.png
-│   ├── css/                # Estilos CSS
-│   │   └── style.css
-│   ├── maps/               # Definições de mapas (JSON)
-│   │   ├── map-city.json
-│   │   └── map-forest.json
-│   └── vendor/             # (Opcional) Bibliotecas de terceiros
-├── admin/                  # Painel administrativo para professores
-│   ├── index.html          # Página do painel
-│   └── admin.js            # Lógica do painel (login, ranking)
-└── README.md               # Este arquivo
+```bash
+npm install
+npm start
+# abre http://localhost:5000
 ```
 
-## Como Rodar Localmente
+> A base usa SQLite. O arquivo do banco é criado automaticamente (não é versionado).
 
-Siga os passos abaixo para configurar e executar o projeto em sua máquina local:
+## Estrutura
 
-1.  **Navegue até o diretório do projeto:**
+```
+.
+├── admin/                 # painel simples de admin (estático)
+├── public/                # frontend (index.html, game.js, net.js, assets/ e maps/)
+│   ├── assets/            # player.png, professor.png, tileset.png
+│   └── maps/              # map-city.json etc (servidos em /data/)
+├── server/                # backend Node.js
+│   ├── server.js          # Express + Socket.IO + static
+│   ├── sockets.js         # eventos player:join/move/... (server authority)
+│   ├── db.js              # init e helpers do SQLite
+│   ├── schema.sql         # schema base (opcional)
+│   └── *.js               # battle, missions, math, etc.
+├── package.json
+└── README.md
+```
 
-    ```bash
-    cd rpg_math_game
-    ```
+## Scripts NPM
 
-2.  **Instale as dependências do Node.js:**
+- `npm start` – sobe o servidor (`server/server.js`).
+- `npm test` – (reservado para testes).
+- `npm run lint` – (adicione se quiser ESLint).
 
-    ```bash
-    npm install express socket.io sqlite jsonwebtoken dotenv mathjs
-    ```
+## Variáveis de ambiente (opcional)
+- `PORT` (padrão `5000`)
 
-3.  **Configure as variáveis de ambiente:**
+## Desenvolvimento em Codespaces / Dev Containers
 
-    Copie o arquivo de exemplo e renomeie-o para `.env`:
+O repositório inclui **.devcontainer** com Node 20 e SQLite instalados.  
+Ao abrir em Codespaces/VS Code Dev Containers, a extensão executa `npm install` e expõe a porta **5000**.
 
-    ```bash
-    cp server/config.example.env server/.env
-    ```
+## CI (GitHub Actions)
 
-    Edite o arquivo `server/.env` e defina uma senha para o professor (substitua `changeme` por uma senha forte):
+Incluí um workflow simples que:
+- Checa Node 20
+- Instala dependências com cache
+- Roda `npm test` (se existir)
 
-    ```
-    PORT=3000
-    PROF_PASSWORD=sua_senha_segura_aqui
-    JWT_SECRET=uma_chave_secreta_para_jwt
-    ```
+## Licença
 
-4.  **Inicie o servidor:**
-
-    ```bash
-    node server/server.js
-    ```
-
-    Ou, para desenvolvimento com `nodemon` (se instalado globalmente):
-
-    ```bash
-    nodemon server/server.js
-    ```
-
-5.  **Acesse o jogo e o painel administrativo:**
-
-    -   **Jogo:** Abra seu navegador e acesse `http://localhost:3000/`
-    -   **Painel do Professor:** Abra seu navegador e acesse `http://localhost:3000/admin`
-
-    Ao iniciar o jogo, você será solicitado a inserir um nome de jogador. Para o painel do professor, use o usuário `professor` e a senha que você definiu no arquivo `.env`.
-
-## Funcionalidades Principais
-
--   **Movimento e Interação:** Use as teclas `WASD` ou `Setas` para mover o personagem. Pressione `E` ou `Enter` para interagir com NPCs e portais.
--   **Batalhas de Matemática:** Ao interagir com certos NPCs, uma batalha será iniciada onde você deve responder a perguntas de matemática para causar dano ao inimigo.
--   **Sistema de Missões:** Pressione `M` para abrir o painel de missões e acompanhar seu progresso.
--   **Persistência de Dados:** Seu progresso (nível, experiência, HP, moedas, missões) é salvo no banco de dados.
--   **Painel do Professor:** Permite que professores visualizem o ranking de jogadores e o progresso dos alunos (missões concluídas, acertos/erros).
-
-## Geração de Perguntas de Matemática
-
-O arquivo `server/math.js` contém a lógica para gerar perguntas de matemática dinamicamente. Atualmente, ele suporta os seguintes tipos de perguntas:
-
--   Aritmética fracionária
--   Equações lineares simples
--   Porcentagem
--   Potências e raízes
--   MMC/MDC
--   Proporções
-
-Cada pergunta é gerada com parâmetros aleatórios e inclui uma explicação sucinta da solução.
-
-## Assets
-
-Os assets de pixel-art (`tileset.png`, `player.png`, `npc.png`, `ui/icons.png`) são placeholders simples gerados para este projeto. Eles podem ser substituídos por assets mais elaborados para melhorar a experiência visual do jogo.
-
-## Considerações de Desenvolvimento
-
--   **Autoridade do Servidor:** O servidor é responsável por validar movimentos, colisões e a lógica de batalha para prevenir trapaças.
--   **Otimização:** O jogo utiliza culling para renderizar apenas os tiles visíveis na tela, otimizando o desempenho.
--   **Respawn de NPCs:** NPCs derrotados respawnarão após um tempo configurável.
-
----
-
-Divirta-se explorando o Mundo da Matemática!
-
-
+MIT – sinta-se livre para usar/alterar. Veja `LICENSE`.
