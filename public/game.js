@@ -70,15 +70,17 @@
 
   function makeGridSprite(url, cols, rows) {
     const img = new Image();
+    img.crossOrigin = 'anonymous';
     img.src = url;
     return waitImage(img).then(() => {
-      const w = img.naturalWidth || img.width;
-      const h = img.naturalHeight || img.height;
-      const frameW = Math.floor(w / cols);
-      const frameH = Math.floor(h / rows);
+      const w = img.naturalWidth || img.width || 0;
+      const h = img.naturalHeight || img.height || 0;
+      const frameW = Math.floor(w / cols) || CONFIG.TILE_SIZE;
+      const frameH = Math.floor(h / rows) || CONFIG.TILE_SIZE;
       return {
         img, cols, rows, frameW, frameH,
         draw(worldX, worldY, frame, tileW, tileH) {
+          if (!frameW || !frameH) return;
           const fx = Math.max(0, Math.floor(frame % cols));
           const fy = Math.max(0, Math.floor(frame / cols));
           const sx = fx * frameW;
@@ -97,19 +99,18 @@
     let map;
     try {
       const res = await fetch(url);
-      if (res.ok) {
-        map = await res.json();
-      }
+      if (res.ok) map = await res.json();
     } catch (e) {}
 
     if (!map) {
       const size = 50;
+      const layerData = new Array(size * size).fill(1);
       map = {
         width: size,
         height: size,
         tilewidth: CONFIG.TILE_SIZE,
         tileheight: CONFIG.TILE_SIZE,
-        layers: [{ type: 'tilelayer', data: new Array(size * size).fill(0) }],
+        layers: [{ type: 'tilelayer', data: layerData }],
         tilesets: [{ firstgid: 1, image: CONFIG.TILESET_FALLBACK }]
       };
     }
@@ -122,13 +123,13 @@
     const tilesetPath = ts.image || CONFIG.TILESET_FALLBACK;
 
     tilesetImg = new Image();
+    tilesetImg.crossOrigin = 'anonymous';
     tilesetReady = false;
     tilesetImg.src = tilesetPath;
     await waitImage(tilesetImg);
-    tilesetReady = true;
-
-    const w = tilesetImg.naturalWidth || tilesetImg.width || 1;
-    tilesetCols = Math.max(1, Math.floor(w / tw));
+    const w = tilesetImg.naturalWidth || tilesetImg.width;
+    tilesetCols = Math.max(1, Math.floor((w || tw) / tw));
+    tilesetReady = !!w;
 
     updatePalette();
     await detectVisibleGidOffset();
