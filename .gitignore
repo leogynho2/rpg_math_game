@@ -31,3 +31,9 @@ Thumbs.db
 .vscode/
 .idea/
 *.swp
+
+# SQLite
+*.sqlite
+*.sqlite-journal
+database.sqlite
+server/db.sqlite
