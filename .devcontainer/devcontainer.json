@@ -1,10 +1,14 @@
 {
-  "name": "Mundo Matem\u00e1tica RPG",
+  "name": "rpg_math_game",
   "image": "mcr.microsoft.com/devcontainers/javascript-node:20",
-  "forwardPorts": [
-    5000
-  ],
-  "postCreateCommand": "npm install",
+  "features": {
+    "ghcr.io/devcontainers/features/sqlite:1": {}
+  },
+  "forwardPorts": [5000],
+  "portsAttributes": {
+    "5000": { "label": "RPG Server", "onAutoForward": "openPreview" }
+  },
+  "postCreateCommand": "npm ci || npm install",
   "customizations": {
     "vscode": {
       "extensions": [
@@ -13,9 +17,5 @@
         "ms-vscode.vscode-typescript-tslint-plugin"
       ]
     }
-  },
-  "features": {
-    "ghcr.io/devcontainers/features/common-utils:2": {},
-    "ghcr.io/devcontainers/features/sqlite:1": {}
   }
 }
