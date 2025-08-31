@@ -1,14 +1,11 @@
 {
   "name": "rpg_math_game",
-  "image": "mcr.microsoft.com/devcontainers/javascript-node:20",
-  "features": {
-    "ghcr.io/devcontainers/features/sqlite:1": {}
-  },
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:20",
   "forwardPorts": [5000],
   "portsAttributes": {
     "5000": { "label": "RPG Server", "onAutoForward": "openPreview" }
   },
-  "postCreateCommand": "npm ci || npm install",
+  "postCreateCommand": "sudo apt-get update && sudo apt-get install -y sqlite3 || true; npm ci || npm install",
   "customizations": {
     "vscode": {
       "extensions": [
