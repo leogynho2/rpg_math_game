@@ -12,49 +12,38 @@ function init(socketIoInstance) {
         console.log('A user connected:', socket.id);
 
         socket.on('player:join', async (data) => {
-            // VALIDAÇÃO DO NOME DO JOGADOR
-            if (!data || !data.name || typeof data.name !== 'string') {
-                console.error('Dados inválidos recebidos no player:join:', data);
+            const playerName = data?.name?.trim();
+            if (!playerName) {
                 socket.emit('error', { message: 'Nome do jogador é obrigatório' });
                 return;
             }
-
-            const playerName = data.name.trim();
-            if (playerName === '') {
-                socket.emit('error', { message: 'Nome do jogador não pode estar vazio' });
-                return;
-            }
-
-            console.log('player:join data received:', { name: playerName }); // DEBUG
 
             try {
                 // Primeiro verifica se o usuário existe
                 let user = await db.get('SELECT * FROM users WHERE name = ?', [playerName]);
                 if (!user) {
-                    // Cria novo usuário (sem senha para simplificar)
                     const userResult = await db.run('INSERT INTO users (name) VALUES (?)', [playerName]);
                     user = { id: userResult.lastID, name: playerName };
                 }
 
                 // Verifica se o player existe para este usuário
                 let player = await db.get(
-                    'SELECT players.*, users.name FROM players JOIN users ON players.user_id = users.id WHERE players.user_id = ?', 
+                    'SELECT players.*, users.name FROM players JOIN users ON players.user_id = users.id WHERE players.user_id = ?',
                     [user.id]
                 );
-                
+
                 if (!player) {
-                    // Cria novo player para o usuário
                     await db.run(
                         'INSERT INTO players (user_id, level, exp, hp, max_hp, coins, wins, losses, last_map, x, y) VALUES (?, 1, 0, 100, 100, 0, 0, 0, "map-city", 25, 25)',
                         [user.id]
                     );
                     player = await db.get(
-                        'SELECT players.*, users.name FROM players JOIN users ON players.user_id = users.id WHERE players.user_id = ?', 
+                        'SELECT players.*, users.name FROM players JOIN users ON players.user_id = users.id WHERE players.user_id = ?',
                         [user.id]
                     );
                 }
 
-                socket.emit('state:update', { player });
+                socket.emit('state:update', { player, npcs: [], otherPlayers: {} });
             } catch (error) {
                 console.error('Erro no player:join:', error);
                 socket.emit('error', { message: 'Erro interno do servidor' });
